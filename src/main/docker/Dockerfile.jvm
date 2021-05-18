@@ -21,7 +21,12 @@
 # docker run -i --rm -p 8080:8080 -p 5005:5005 -e JAVA_ENABLE_DEBUG="true" quarkus/edgeservice-jvm
 #
 ###
-FROM registry.access.redhat.com/ubi8/ubi-minimal:8.3 
+FROM registry.access.redhat.com/ubi8/ubi-minimal:8.3
+
+RUN mkdir -p /var/qiot/config
+RUN chown -R 1001 /var/qiot
+RUN chmod -R "g+rwX" /var/qiot
+RUN chown -R 1001:root /var/qiot
 
 ARG JAVA_PACKAGE=java-11-openjdk-headless
 ARG RUN_JAVA_VERSION=1.3.8
