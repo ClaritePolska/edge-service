@@ -26,13 +26,13 @@ public class RegisterServiceImpl {
     @Inject
     SystemService systemService;
 
-    @ConfigProperty(name = "qiot.team.name")
+    @ConfigProperty(name = "qiot.station.name")
     String qiotTeamName;
 
-    @ConfigProperty(name = "qiot.team.latitude")
+    @ConfigProperty(name = "qiot.station.latitude")
     String qiotTeamLatitude;
 
-    @ConfigProperty(name = "qiot.team.longitude")
+    @ConfigProperty(name = "qiot.station.longitude")
     String qiotTeamLongitude;
 
     @PostConstruct
