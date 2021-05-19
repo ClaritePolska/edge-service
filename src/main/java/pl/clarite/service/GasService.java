@@ -53,6 +53,7 @@ public class GasService {
         GasInput inputData = objectMapper.readValue(inputFile.toFile(), GasInput.class);
         GasOutputMessage output = GasOutputMessage.builder().stationId(stationId).instant(inputData.getDateTime().format(DateTimeFormatter.ISO_DATE_TIME))
                 .nh3(inputData.getNh3()).oxidising(inputData.getOxidising()).reducing(inputData.getReducing()).build();
+        Files.delete(inputFile);
         return output;
     }
 }
