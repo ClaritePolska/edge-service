@@ -26,15 +26,6 @@ public class RegisterServiceImpl implements RegisterService {
     @Inject
     SystemService systemService;
 
-    @ConfigProperty(name = "qiot.station.name")
-    String qiotTeamName;
-
-    @ConfigProperty(name = "qiot.station.latitude")
-    String qiotTeamLatitude;
-
-    @ConfigProperty(name = "qiot.station.longitude")
-    String qiotTeamLongitude;
-
     @PostConstruct
     public void register() {
         System.out.println("   ******   **                  **   **             *******            **         **                  ********        **       \n" +
@@ -75,6 +66,9 @@ public class RegisterServiceImpl implements RegisterService {
             systemService.saveEdgeDetails(registerResponse);
             systemService.saveEdgeKeystore(registerResponse.getKeystore());
             systemService.saveEdgeTruststore(registerResponse.getTruststore());
+
+            System.setProperty("STATION_ID", registerResponse.getId());
+            System.setProperty("KEYSTORE_PASSWORD", registerRequest.getKeyStorePassword());
 
             return registerResponse;
         } catch (Exception ex) {
