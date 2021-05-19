@@ -4,7 +4,10 @@ import io.quarkus.arc.log.LoggerName;
 import io.quarkus.scheduler.Scheduled;
 import org.jboss.logging.Logger;
 import pl.clarite.dto.GasOutputMessage;
+import pl.clarite.dto.PollutionInput;
+import pl.clarite.dto.PollutionOutputMessage;
 import pl.clarite.service.GasService;
+import pl.clarite.service.PollutionService;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -20,6 +23,9 @@ public class TelemetryScheduler {
 
     @Inject
     GasService gasService;
+
+    @Inject
+    PollutionService pollutionService;
 
     @Inject
     TelemetrySender telemetrySender;
@@ -43,4 +49,25 @@ public class TelemetryScheduler {
             }
         });
     }
+
+    @Scheduled(every = "{qiot.telemetry.pollution.send.every}")
+    void checkAndSendPollutionTelemetry() throws IOException {
+        if (pollutionService.getStationId().equals("none")) {
+            log.info("Device is waiting for registration");
+            return;
+        }
+        log.info("Collecting Pollution data from input folder");
+        List<Path> fileList = pollutionService.getDataList();
+        log.info("Pollution list size: " + fileList.size());
+        fileList.forEach(file -> {
+            try {
+                PollutionOutputMessage out = pollutionService.getData(file);
+                log.info("Pollution data: " + out);
+                telemetrySender.sendPollutionData(out);
+            } catch (IOException e) {
+                log.error("cannot read Pollution data from file: " + file, e);
+            }
+        });
+    }
+
 }
