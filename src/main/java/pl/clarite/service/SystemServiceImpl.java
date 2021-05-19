@@ -23,7 +23,7 @@ public class SystemServiceImpl implements SystemService {
      *
      * @return Serial number of edge device or Optional.empty()
      */
-    public Optional<String> getSerialNumber() {
+    public String getSerialNumber() {
         try {
             Process process;
             ProcessBuilder processBuilder = new ProcessBuilder()
@@ -42,10 +42,10 @@ public class SystemServiceImpl implements SystemService {
 
             int exitVal = process.waitFor();
             if (exitVal >= 0) {
-                return Optional.of(result);
+                return result;
             }
 
-            return Optional.empty();
+            throw new RuntimeException("Could not register the edge device in the DataHub network.");
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
