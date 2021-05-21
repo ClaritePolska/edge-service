@@ -18,39 +18,6 @@ public class SystemServiceImpl implements SystemService {
 
     private static final Logger logger = Logger.getLogger(SystemServiceImpl.class);
 
-    /**
-     * Retrieves the serial number of edge device.
-     *
-     * @return Serial number of edge device or Optional.empty()
-     */
-    public String getSerialNumber() {
-        try {
-            Process process;
-            ProcessBuilder processBuilder = new ProcessBuilder()
-                    .redirectErrorStream(false);
-
-            logger.info("Starting a new getStationId process...");
-
-            process = processBuilder
-                    .command("/bin/sh", "-c", "cat /sys/firmware/devicetree/base/serial-number")
-                    .start();
-
-            logger.info("Is the getStationId process started? " + process.isAlive());
-
-            BufferedReader output = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            String result = output.lines().collect(Collectors.joining());
-
-            int exitVal = process.waitFor();
-            if (exitVal >= 0) {
-                return result;
-            }
-
-            throw new RuntimeException("Could not register the edge device in the DataHub network.");
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     @Override
     public void saveEdgeDetails(RegisterResponse registerResponse) {
         if (Objects.isNull(registerResponse)) {

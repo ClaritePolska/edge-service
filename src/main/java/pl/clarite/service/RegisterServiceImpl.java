@@ -1,7 +1,5 @@
 package pl.clarite.service;
 
-import io.quarkus.runtime.Startup;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.jboss.logging.Logger;
 import pl.clarite.client.RegisterServiceClient;
@@ -11,9 +9,7 @@ import pl.clarite.dto.RegisterResponse;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import java.util.UUID;
 
-//@Startup
 @ApplicationScoped
 public class RegisterServiceImpl implements RegisterService {
 
@@ -27,7 +23,7 @@ public class RegisterServiceImpl implements RegisterService {
     SystemService systemService;
 
     @PostConstruct
-    public void register() {
+    public void asciArt() {
         System.out.println("   ******   **                  **   **             *******            **         **                  ********        **       \n" +
                 "  **////** /**                 //   /**            /**////**          /**        /**                 **//////        ****      \n" +
                 " **    //  /**  ******   ****** ** ******  *****   /**   /**  ******  /**  ******/**  **  ******    /**             **//**     \n" +
@@ -36,26 +32,6 @@ public class RegisterServiceImpl implements RegisterService {
                 "//**    ** /** **////**  /**   /**  /**  /**////   /**      /**   /** /** /////**/**/**  **////**          /** **/**//////** **\n" +
                 " //******  ***//********/***   /**  //** //******  /**      //******  *** ****** /**//**//********   ******** /**/**     /**/**\n" +
                 "  //////  ///  //////// ///    //    //   //////   //        //////  /// //////  //  //  ////////   ////////  // //      // //");
-
-        /*try {
-            String serial = systemService
-                    .getSerialNumber();
-
-            RegisterResponse registerResponse = registerServiceClient.register(RegisterRequest.builder()
-                    .serial(serial + "_____" + UUID.randomUUID())
-                    .name(qiotTeamName)
-                    .latitude(Double.parseDouble(qiotTeamLatitude))
-                    .longitude(Double.parseDouble(qiotTeamLongitude))
-                    .build());
-
-            systemService.saveEdgeDetails(registerResponse);
-            systemService.saveEdgeKeystore(registerResponse.getKeystore());
-            systemService.saveEdgeTruststore(registerResponse.getTruststore());
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            logger.error("Could not register the edge device in the DataHub network.");
-            throw new RuntimeException("Could not register the edge device in the DataHub network.");
-        }*/
     }
 
     @Override
