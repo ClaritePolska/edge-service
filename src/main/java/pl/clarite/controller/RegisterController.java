@@ -9,7 +9,7 @@ import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
-@Path("/")
+@Path("/register")
 @RequestScoped
 public class RegisterController {
 
@@ -17,7 +17,6 @@ public class RegisterController {
     RegisterService registerService;
 
     @POST
-    @Path("/register")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public RegisterResponse register(RegisterRequest registerRequest) {

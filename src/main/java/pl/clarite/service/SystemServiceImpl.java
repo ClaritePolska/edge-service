@@ -1,14 +1,13 @@
 package pl.clarite.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 import pl.clarite.dto.RegisterResponse;
 
 import javax.enterprise.context.ApplicationScoped;
-import java.io.BufferedReader;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import javax.inject.Inject;
+import java.io.*;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -18,6 +17,35 @@ public class SystemServiceImpl implements SystemService {
 
     private static final Logger logger = Logger.getLogger(SystemServiceImpl.class);
 
+    @ConfigProperty(name = "qiot.folder.config")
+    String configDirectory;
+
+    @Inject
+    ObjectMapper objectMapper;
+
+    @Override
+    public Optional<String> getStationId() {
+        try {
+            InputStream inputStream = new FileInputStream(configDirectory + "/edge.json");
+            StringBuilder stringBuilder = new StringBuilder();
+
+            InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+            String readLine = "";
+            while ((readLine = bufferedReader.readLine()) != null){
+                stringBuilder.append(readLine);
+            }
+            inputStream.close();
+
+            RegisterResponse result = objectMapper.readValue(stringBuilder.toString(), RegisterResponse.class);
+            return Optional.of(result.getId());
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+        }
+
+        return Optional.empty();
+    }
+
     @Override
     public void saveEdgeDetails(RegisterResponse registerResponse) {
         if (Objects.isNull(registerResponse)) {
@@ -25,8 +53,7 @@ public class SystemServiceImpl implements SystemService {
         }
 
         try {
-            FileOutputStream outputStream = new FileOutputStream("/var/qiot/config/edge.json");
-            ObjectMapper objectMapper = new ObjectMapper();
+            FileOutputStream outputStream = new FileOutputStream(configDirectory + "/edge.json");
             byte[] strToBytes = objectMapper.writeValueAsBytes(registerResponse);
             outputStream.write(strToBytes);
             outputStream.close();
@@ -42,7 +69,7 @@ public class SystemServiceImpl implements SystemService {
         }
 
         try {
-            FileOutputStream outputStream = new FileOutputStream("/var/qiot/config/edge.ks");
+            FileOutputStream outputStream = new FileOutputStream(configDirectory + "/edge.ks");
             byte[] strToBytes = keystore.getBytes();
             outputStream.write(strToBytes);
             outputStream.close();
@@ -58,7 +85,7 @@ public class SystemServiceImpl implements SystemService {
         }
 
         try {
-            FileOutputStream outputStream = new FileOutputStream("/var/qiot/config/edge.ts");
+            FileOutputStream outputStream = new FileOutputStream(configDirectory + "/edge.ts");
             byte[] strToBytes = truststore.getBytes();
             outputStream.write(strToBytes);
             outputStream.close();
