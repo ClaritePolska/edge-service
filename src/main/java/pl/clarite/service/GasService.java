@@ -29,12 +29,11 @@ public class GasService {
     @Inject
     ObjectMapper objectMapper;
 
+    @Inject
+    SystemService systemService;
+
     @ConfigProperty(name = "qiot.telemetry.gas.input.path")
     String gasInputPath;
-
-    @Getter
-    @ConfigProperty(name = "qiot.telemetry.serialid")
-    String stationId;
 
     public List<Path> getDataList() throws IOException {
         try (final Stream<Path> fileStream = Files.list(Paths.get(gasInputPath))) {
@@ -49,6 +48,9 @@ public class GasService {
     public GasOutputMessage getData(Path inputFile) throws IOException {
         log.info("read Gas data from file: " + inputFile);
         GasInput inputData = objectMapper.readValue(inputFile.toFile(), GasInput.class);
+
+        String stationId = systemService.getStationId().orElseThrow(() -> new RuntimeException("Cannot retrieve station id of registered the edge device."));
+
         GasOutputMessage output = GasOutputMessage.builder().stationId(stationId).instant(inputData.getDateTime().format(DateTimeFormatter.ISO_DATE_TIME))
                 .nh3(inputData.getNh3()).oxidising(inputData.getOxidising()).reducing(inputData.getReducing()).build();
         Files.delete(inputFile);

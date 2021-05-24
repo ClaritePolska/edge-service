@@ -8,6 +8,7 @@ import pl.clarite.dto.PollutionInput;
 import pl.clarite.dto.PollutionOutputMessage;
 import pl.clarite.service.GasService;
 import pl.clarite.service.PollutionService;
+import pl.clarite.service.SystemService;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -25,6 +26,9 @@ public class TelemetryScheduler {
     GasService gasService;
 
     @Inject
+    SystemService systemService;
+
+    @Inject
     PollutionService pollutionService;
 
     @Inject
@@ -32,7 +36,7 @@ public class TelemetryScheduler {
 
     @Scheduled(every = "{qiot.telemetry.gas.send.every}")
     void checkAndSendGasTelemetry() throws IOException {
-        if (gasService.getStationId().equals("none")) {
+        if (systemService.getStationId().isEmpty()) {
             log.info("Device is waiting for registration");
             return;
         }
@@ -52,7 +56,7 @@ public class TelemetryScheduler {
 
     @Scheduled(every = "{qiot.telemetry.pollution.send.every}")
     void checkAndSendPollutionTelemetry() throws IOException {
-        if (pollutionService.getStationId().equals("none")) {
+        if (systemService.getStationId().isEmpty()) {
             log.info("Device is waiting for registration");
             return;
         }
